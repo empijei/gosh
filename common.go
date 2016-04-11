@@ -1,41 +1,35 @@
 package gosh
 
-import (
-	"os"
-	"sync"
-)
+import "sync"
 
-type Block []byte
-type Pipe chan Block
+type Pipe chan string
+type PipeBlock func(interface{}) Pipe
 
-//NOTE string or array of runes? (otherwise buffersize has no meaning whatsoever
-var BufferSize int = 4096
-var BlockSize int = 128
-var curPipes []Pipe
-var debugStream *os.File
+var bufSize = 1024
 var wg sync.WaitGroup
 
-func init() {
-	debugStream = os.Stderr
-	//TODO start the reader on stdin NOTE: rimettere gli a capi che readline toglie
-	//TODO initialize Pipe
+func NewPipe(sizes ...int) Pipe {
+	if len(sizes) == 0 {
+		return make(Pipe, bufSize)
+	} else {
+		return make(Pipe, sizes[0])
+	}
 }
-
-func NewPipe() Pipe {
-	return make(Pipe, BufferSize)
-}
-func NewBlock() Block {
-	return make(Block, BlockSize)
-}
-
-func closePipes() {
-	//	for i, pipe := range curPipes {
-	//		close(pipe)
-	//	}
-}
-func Start() {}
 func End() {
-	defer wg.Wait()
+	wg.Wait()
 }
 
-//TODO create a reader che wrappa il chan con i bytes e permetta di leggerlo come stream o line-by-line
+func addWait() {
+	wg.Add(1)
+}
+
+func removeWait() {
+	wg.Done()
+}
+
+func (pipe Pipe) ToStdout() {
+	//TODO
+}
+func (pipe Pipe) ToFile(filename string) {
+	//TODO
+}

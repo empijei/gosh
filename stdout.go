@@ -2,17 +2,13 @@ package gosh
 
 import "fmt"
 
-func Stdout() {
-	for _, pipe := range curPipes {
-		wg.Add(1)
-		go stdout(pipe)
-	}
+func Stdout(in Pipe) {
+	addWait()
+	go stdout(in)
 }
-
-func stdout(pipe Pipe) {
-	defer wg.Done()
-	for data, moredata := <-pipe; moredata; {
-		fmt.Print(data)
-		data, moredata = <-pipe
+func stdout(in Pipe) {
+	defer removeWait()
+	for data, moredata := <-in; moredata; data, moredata = <-in {
+		fmt.Println(data)
 	}
 }

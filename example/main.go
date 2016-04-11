@@ -3,8 +3,8 @@ package main
 import "github.com/RobClap/gosh"
 
 func main() {
-	gosh.Start()
-	gosh.Cat("/tmp/tmp.txt")
-	gosh.Stdout()
-	gosh.End()
+	defer gosh.End()
+	pipe := gosh.Cat("/tmp/addresses.txt")
+	pipe = gosh.Host2IP(pipe)
+	gosh.Stdout(pipe)
 }
